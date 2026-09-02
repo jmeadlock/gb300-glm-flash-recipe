@@ -16,6 +16,7 @@ docker run -d --name glm53-flash --restart unless-stopped \
     --model-path /model --host 0.0.0.0 --port 30000 \
     --quantization modelopt_fp4 --trust-remote-code \
     --api-key $API_KEY --served-model-name glm-5.3-flash \
+    --tool-call-parser glm47 --reasoning-parser glm45 \
     --cuda-graph-max-bs 32 --max-running-requests 32 \
     --max-prefill-tokens 8192 --chunked-prefill-size 8192 \
     --speculative-algorithm DFLASH \

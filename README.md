@@ -119,6 +119,22 @@ Notes that matter:
 - For batch-heavy workloads (C16+), drop the three `--speculative-*` lines: plain AR
   wins above the crossover.
 
+## ⚠️ Agent frameworks need the parsers
+
+If anything OpenAI-compatible drives this server with **tools** (agents, function
+calling, structured workflows), the launch line MUST include:
+
+```
+--tool-call-parser glm47 --reasoning-parser glm45
+```
+
+Without them the server still answers — but GLM's `<tool_call>` markup is returned as
+plain *text* instead of parsed `tool_calls`, so every agent turn silently dies, and
+thinking tokens leak into `content` instead of `reasoning_content`. Plain-chat smoke
+tests pass while agent use is completely broken, which makes this miserable to
+diagnose downstream. (GLM-5.3-Flash uses the GLM-4.7-style template — `glm47` is the
+matching parser on the PR branch.) All launch scripts in this repo include the flags.
+
 ## Swapping variants
 
 Any **same-architecture NVFP4 checkpoint** (`glm5_next`, ModelOpt NVFP4) is a drop-in
