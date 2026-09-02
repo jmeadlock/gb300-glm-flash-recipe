@@ -23,9 +23,17 @@ Warm steady-state, 256-token short generations, benched on-box (no network in pa
 | C32 | **1162.5 agg** | 835.8 agg    | AR |
 | TTFT under 8-stream load | 0.18 s | 0.19 s | tie |
 
-Cold prefill (nonce-defeated prefix cache): 8k in 0.89 s (~9.2k tok/s), 32k in 1.17 s
-(~27.7k tok/s). KV cache: FP8, 2.72M-token capacity. DFlash2 accept length observed
-2.77–3.95 on prose.
+Cold prefill on the production DFlash2 config (nonce-defeated prefix cache, warm
+shapes — see the warmup section; first hit per prompt size pays ~16 s of autotune):
+
+| Prompt tokens | TTFT | Prefill rate |
+|---|---|---|
+| 6,625 | 0.29 s | ~22.5k tok/s |
+| 26,393 | 1.10 s | ~24.1k tok/s |
+| 52,739 | 2.01 s | ~26.2k tok/s |
+| 105,434 | 4.00 s | ~26.3k tok/s |
+
+KV cache: FP8, 2.72M-token capacity. DFlash2 accept length observed 2.77–3.95 on prose.
 
 **Rule of thumb: DFlash2 for interactive (C1–C8), plain AR for batch (C16+).**
 
@@ -122,6 +130,9 @@ Consequences:
 1. After **every** server start, run the warmup sweep
    ([`recipes/warmup.sh`](recipes/warmup.sh)): one wave each at C1/4/8/16/32.
    Takes ~90 s. Skipping it means your first user at each concurrency eats the tune.
+   The same applies to **prompt-length shapes**: the first long-context request per
+   size class after restart pays ~16 s (measured at 8k/32k/64k); warm, those same
+   prompts prefill in 0.3–2 s.
 2. Any benchmark's **first pass after restart measures autotune, not serving**. Our own
    day-one "concurrency cliff" (~220 agg tok/s, 15 s TTFT at C8+) was exactly this
    artifact. Bench warm or bench wrong.

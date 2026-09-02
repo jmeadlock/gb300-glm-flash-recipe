@@ -12,7 +12,12 @@ dflash2,16,aggregate,796.3,tok/s,warm
 dflash2,32,aggregate,835.8,tok/s,warm
 dflash2,8,ttft_under_load,0.19,s,streamed 9th request during 8 running
 day-one-default,1,decode,141.8,tok/s,no tuning flags; median of 3
-prefill,8197,cold_prefill,0.89,s,nonce-prefixed; ~9228 tok/s
-prefill,32495,cold_prefill,1.17,s,nonce-prefixed; ~27695 tok/s
+prefill-dayone-ar,8197,cold_prefill_ttft,0.89,s,day-one AR config; ~9228 tok/s
+prefill-dayone-ar,32495,cold_prefill_ttft,1.17,s,day-one AR config; ~27695 tok/s
+prefill-dflash2,6625,cold_prefill_ttft,0.29,s,production config warm shapes; ~22465 tok/s
+prefill-dflash2,26393,cold_prefill_ttft,1.10,s,production config warm shapes; ~24060 tok/s
+prefill-dflash2,52739,cold_prefill_ttft,2.01,s,production config warm shapes; ~26209 tok/s
+prefill-dflash2,105434,cold_prefill_ttft,4.00,s,production config warm shapes; ~26340 tok/s
+prefill-dflash2,8000,first_hit_autotune,16.0,s,approx one-time cost per prompt-size class after restart
 dflash2,1,accept_length_min,2.77,tokens,observed range on prose
 dflash2,1,accept_length_max,3.95,tokens,observed range on prose
