@@ -119,6 +119,20 @@ Notes that matter:
 - For batch-heavy workloads (C16+), drop the three `--speculative-*` lines: plain AR
   wins above the crossover.
 
+## Swapping variants
+
+Any **same-architecture NVFP4 checkpoint** (`glm5_next`, ModelOpt NVFP4) is a drop-in
+for this recipe: same frozen image, same flags, same DFlash2 draft. That includes
+fine-tunes and modified-weight variants (e.g. red-team/"derisked" releases such as
+Blackfrost-Research's GLM-5.3-Flash-DERISKED-NVFP4). A swap is a container relaunch
+plus warmup — about five minutes, and the served model name stays constant so clients
+never notice ([`recipes/swap-model.sh`](recipes/swap-model.sh)).
+
+Keep variant weights staged on local NVMe next to each other; the KV cache and CUDA
+graphs rebuild on each launch, so nothing else carries over. If you swap a variant with
+a shifted output distribution, re-check DFlash2 accept lengths — the drafter was
+trained against the stock base, and a large drift would erode the speculative win.
+
 ## ⚠️ Warm up or your benchmarks lie
 
 The single most important operational finding: **first requests at each new batch shape
