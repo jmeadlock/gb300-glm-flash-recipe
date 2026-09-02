@@ -52,10 +52,16 @@ recipe's numbers are ahead at every point, mostly thanks to the warmup disciplin
 
 Why NVFP4 and not something bigger: the official FP8 is 328 GB (doesn't fit the ~269 GB of visible HBM
 without offload pain) and BF16 is 643 GB. NVFP4 + FP8 KV leaves ~87 GB of visible HBM for cache and
-graphs. We also tried the full **GLM-5.3** (704 GB FP8) with SGLang CPU-offload on this
+graphs. We also tried the full **GLM-5.3 in FP8** (704 GB) with SGLang CPU-offload on this
 box: **it does not fit** — the offload loader stages the entire weight set through host
 shared memory, peaking over the machine's total 744 GiB (three OOMs, receipts in
 [`data/failure-ledger.md`](data/failure-ledger.md)).
+
+Important nuance: that verdict is about the **FP8** big model. The full **GLM-5.3 in
+NVFP4** is ~433 GB — it still needs ~170 GB of Grace-coherent offload (won't fit HBM),
+but it *passes* the loader's staging math (433 GB + buffers < 744 GiB), so it's a live
+untested experiment, not a proven impossibility. Expect a real decode penalty from
+streaming offloaded experts over NVLink-C2C; numbers TBD.
 
 ## The runtime (the hard part)
 

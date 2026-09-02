@@ -24,8 +24,13 @@ Three attempts with `--cpu-offload-gb` (500/620/560) all OOM'd — GPU-side, the
 host-side twice. dmesg showed the scheduler peaking at **1.37 TB total-vm with 741 GB
 in shm**: SGLang's offload loader stages the full weight set through host shared
 memory, so peak host demand ≈ model size + buffers > the machine's 744 GiB total.
-Not tunable around with stock SGLang. Verdict: dual-Station or streaming-loader
-territory. NVFP4 Flash *is* the single-Station model.
+Not tunable around with stock SGLang. Verdict for the FP8 checkpoint: dual-Station or
+streaming-loader territory. NVFP4 Flash *is* the proven single-Station model.
+
+Scope note: this verdict covers **FP8 (704 GB)** only. The full GLM-5.3 in **NVFP4
+(~433 GB)** passes the loader's shm-staging math (433 + buffers < 744 GiB total) and
+would need ~170 GB of Grace offload — untested as of this writing, expected slow,
+but not excluded by the failure above.
 
 ## Also worth knowing
 
