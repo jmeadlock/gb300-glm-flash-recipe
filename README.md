@@ -49,6 +49,7 @@ recipe's numbers are ahead at every point, mostly thanks to the warmup disciplin
 | GPU | Blackwell Ultra (sm103), 288 GB HBM3e (269 GB visible to CUDA — nvidia-smi reports 256,703 MiB) |
 | CPU | 72-core Grace (aarch64), 494 GB LPDDR coherent via NVLink-C2C |
 | OS | DGX OS (Ubuntu 24.04), kernel 6.17-nvidia-64k, driver 595.84, CUDA 13.2 |
+| Memory mode | CDMM enabled (`NVreg_CoherentGPUMemoryMode=driver`) — see [Enable CDMM](#enable-cdmm-before-you-offload-anything) |
 | Storage | model on local NVMe (load from network mounts works but wastes minutes) |
 
 ## Models (revision-pinned)
@@ -202,6 +203,35 @@ python3 bench/bench.py YOUR_API_KEY          # run ON the serving box
 `data/throughput.csv` is the machine-readable results. TTFT probes stream and count
 the first delta of **any** kind — GLM-5.3 is a thinking model, and waiting for visible
 content overstates TTFT wildly.
+
+## Enable CDMM before you offload anything
+
+On driver 595.x the Station ships with the GPU's HBM exposed to Linux as memory-only
+NUMA nodes (`CoherentGPUMemoryMode: ""`), which lets the kernel allocate into HBM behind
+the driver's back. NVIDIA's Coherent Driver-based Memory Management (CDMM) hands HBM to
+the driver exclusively; it is default-on only from R610+. Stas Bekman flagged this as the
+first thing to fix on a Station, and it matters most for any Grace-offload workload
+(the 433 GB big-GLM experiment above).
+
+```bash
+echo "options nvidia NVreg_CoherentGPUMemoryMode=driver" | sudo tee /etc/modprobe.d/nvidia-cdmm.conf
+sudo update-initramfs -u
+sudo reboot
+```
+
+Verify (measured 2026-09-02 on this box):
+
+| Check | Before | After |
+|---|---|---|
+| `grep CoherentGPUMemoryMode /proc/driver/nvidia/params` | `""` | `"driver"` |
+| `grep MemTotal /proc/meminfo` | 780,146,560 kB | 518,526,976 kB |
+| `lscpu` NUMA node count | 9 | 9 (cosmetic — not the signal) |
+
+The MemTotal drop (~262 GB) is the proof: the kernel no longer owns the HBM. Serving
+throughput on GLM-5.3-Flash was unchanged (the model already fits entirely in HBM);
+tool-call parsing and the warmup sweep were re-verified after the reboot. Rollback is
+`sudo rm /etc/modprobe.d/nvidia-cdmm.conf && sudo update-initramfs -u && sudo reboot`.
+Reboot to SSH ≈ 2.5 min; the `--restart unless-stopped` container is serving ≈ 90 s later.
 
 ## Failure ledger
 
