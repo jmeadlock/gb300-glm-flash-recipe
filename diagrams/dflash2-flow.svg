@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 430" font-family="ui-monospace,Menlo,monospace">
+<rect width="900" height="430" fill="#0d1117"/>
+<defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8b949e"/></marker></defs>
+<text x="450" y="34" fill="#e6edf3" font-size="19" text-anchor="middle" font-weight="bold">DFlash2 block-speculative decoding — why C1 gets 1.7×</text>
+
+<!-- draft -->
+<rect x="50" y="70" width="240" height="110" rx="10" fill="#161b22" stroke="#bc8cff" stroke-width="2"/>
+<text x="170" y="98" fill="#bc8cff" font-size="14" text-anchor="middle" font-weight="bold">Draft (~1B, BF16)</text>
+<text x="170" y="120" fill="#8b949e" font-size="11" text-anchor="middle">block diffusion: proposes a</text>
+<text x="170" y="136" fill="#8b949e" font-size="11" text-anchor="middle">whole 8-token block per pass</text>
+<text x="170" y="152" fill="#8b949e" font-size="11" text-anchor="middle">+ path selector picks coherent</text>
+<text x="170" y="168" fill="#8b949e" font-size="11" text-anchor="middle">candidate sequence</text>
+
+<!-- block -->
+<g transform="translate(330,105)">
+  <rect x="0" y="0" width="30" height="30" fill="#bc8cff" opacity="0.9" rx="4"/><rect x="34" y="0" width="30" height="30" fill="#bc8cff" opacity="0.8" rx="4"/><rect x="68" y="0" width="30" height="30" fill="#bc8cff" opacity="0.7" rx="4"/><rect x="102" y="0" width="30" height="30" fill="#bc8cff" opacity="0.6" rx="4"/><rect x="136" y="0" width="30" height="30" fill="#bc8cff" opacity="0.5" rx="4"/><rect x="170" y="0" width="30" height="30" fill="#bc8cff" opacity="0.4" rx="4"/><rect x="204" y="0" width="30" height="30" fill="#bc8cff" opacity="0.3" rx="4"/>
+  <text x="117" y="50" fill="#8b949e" font-size="11" text-anchor="middle">draft block (≤7 proposed tokens)</text>
+</g>
+<line x1="290" y1="120" x2="325" y2="120" stroke="#8b949e" stroke-width="1.5" marker-end="url(#a2)"/>
+
+<!-- target -->
+<rect x="610" y="70" width="240" height="110" rx="10" fill="#161b22" stroke="#58a6ff" stroke-width="2"/>
+<text x="730" y="98" fill="#58a6ff" font-size="14" text-anchor="middle" font-weight="bold">Target (355B NVFP4)</text>
+<text x="730" y="120" fill="#8b949e" font-size="11" text-anchor="middle">ONE forward pass verifies</text>
+<text x="730" y="136" fill="#8b949e" font-size="11" text-anchor="middle">the whole block</text>
+<text x="730" y="158" fill="#3fb950" font-size="11" text-anchor="middle" font-weight="bold">lossless: output ≡ AR</text>
+<line x1="570" y1="120" x2="605" y2="120" stroke="#8b949e" stroke-width="1.5" marker-end="url(#a2)"/>
+
+<!-- accept row -->
+<text x="60" y="235" fill="#e6edf3" font-size="13" font-weight="bold">Verification result (accept length ≈ 3 on prose):</text>
+<g transform="translate(60,250)">
+  <rect x="0" y="0" width="34" height="34" fill="#3fb950" rx="4"/><text x="17" y="22" fill="#04140a" font-size="12" text-anchor="middle" font-weight="bold">✓</text>
+  <rect x="38" y="0" width="34" height="34" fill="#3fb950" rx="4"/><text x="55" y="22" fill="#04140a" font-size="12" text-anchor="middle" font-weight="bold">✓</text>
+  <rect x="76" y="0" width="34" height="34" fill="#3fb950" rx="4"/><text x="93" y="22" fill="#04140a" font-size="12" text-anchor="middle" font-weight="bold">✓</text>
+  <rect x="114" y="0" width="34" height="34" fill="#f85149" rx="4"/><text x="131" y="22" fill="#1f0503" font-size="12" text-anchor="middle" font-weight="bold">✗</text>
+  <rect x="152" y="0" width="34" height="34" fill="#161b22" stroke="#30363d" rx="4"/>
+  <rect x="190" y="0" width="34" height="34" fill="#161b22" stroke="#30363d" rx="4"/>
+  <rect x="228" y="0" width="34" height="34" fill="#161b22" stroke="#30363d" rx="4"/>
+  <text x="300" y="22" fill="#8b949e" font-size="11">3 tokens kept from 1 target pass → ~3× fewer big-model steps</text>
+</g>
+
+<!-- crossover -->
+<rect x="60" y="320" width="780" height="80" rx="8" fill="#161b22" stroke="#30363d"/>
+<text x="80" y="345" fill="#d29922" font-size="13" font-weight="bold">The crossover:</text>
+<text x="80" y="366" fill="#e6edf3" font-size="12">C1–C8: verification rides free capacity → DFlash2 wins (234 vs 135 tok/s at C1)</text>
+<text x="80" y="386" fill="#e6edf3" font-size="12">C16+: verification competes with batch decode → plain AR wins (1051 vs 796 agg at C16)</text>
+</svg>

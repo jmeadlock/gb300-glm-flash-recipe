@@ -1,0 +1,18 @@
+config,concurrency,metric,value,unit,notes
+ar-tuned,1,decode,135.5,tok/s,median of 3 warm runs
+ar-tuned,4,aggregate,375.8,tok/s,warm
+ar-tuned,8,aggregate,647.6,tok/s,warm
+ar-tuned,16,aggregate,1051.2,tok/s,warm
+ar-tuned,32,aggregate,1162.5,tok/s,warm
+ar-tuned,8,ttft_under_load,0.18,s,streamed 9th request during 8 running
+dflash2,1,decode,234.2,tok/s,median of 3 warm runs (frozen v2 image)
+dflash2,4,aggregate,511.4,tok/s,warm
+dflash2,8,aggregate,825.2,tok/s,warm
+dflash2,16,aggregate,796.3,tok/s,warm
+dflash2,32,aggregate,835.8,tok/s,warm
+dflash2,8,ttft_under_load,0.19,s,streamed 9th request during 8 running
+day-one-default,1,decode,141.8,tok/s,no tuning flags; median of 3
+prefill,8197,cold_prefill,0.89,s,nonce-prefixed; ~9228 tok/s
+prefill,32495,cold_prefill,1.17,s,nonce-prefixed; ~27695 tok/s
+dflash2,1,accept_length_min,2.77,tokens,observed range on prose
+dflash2,1,accept_length_max,3.95,tokens,observed range on prose
