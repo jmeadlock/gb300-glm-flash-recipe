@@ -38,7 +38,7 @@ recipe's numbers are ahead at every point, mostly thanks to the warmup disciplin
 | | |
 |---|---|
 | Machine | NVIDIA DGX Station GB300 (Exxact build, MSI XpertStation WS300) |
-| GPU | Blackwell Ultra (sm103), 256 GB HBM3e |
+| GPU | Blackwell Ultra (sm103), 288 GB HBM3e (269 GB visible to CUDA — nvidia-smi reports 256,703 MiB) |
 | CPU | 72-core Grace (aarch64), 494 GB LPDDR coherent via NVLink-C2C |
 | OS | DGX OS (Ubuntu 24.04), kernel 6.17-nvidia-64k, driver 595.84, CUDA 13.2 |
 | Storage | model on local NVMe (load from network mounts works but wastes minutes) |
@@ -50,8 +50,8 @@ recipe's numbers are ahead at every point, mostly thanks to the warmup disciplin
 | Target | [`LibertAIDAI/GLM-5.3-Flash-NVFP4`](https://huggingface.co/LibertAIDAI/GLM-5.3-Flash-NVFP4) | `aa28e1f54130286c95fee10d0705c74ce8743734` | 182 GB |
 | Draft | [`incoai/GLM-5.3-Flash-DFlash2`](https://huggingface.co/incoai/GLM-5.3-Flash-DFlash2) | `7d74cdd881ed7e32c31175984a67823127b66cfe` | 2.2 GB |
 
-Why NVFP4 and not something bigger: the official FP8 is 328 GB (doesn't fit 256 GB HBM
-without offload pain) and BF16 is 643 GB. NVFP4 + FP8 KV leaves ~74 GB HBM for cache and
+Why NVFP4 and not something bigger: the official FP8 is 328 GB (doesn't fit the ~269 GB of visible HBM
+without offload pain) and BF16 is 643 GB. NVFP4 + FP8 KV leaves ~87 GB of visible HBM for cache and
 graphs. We also tried the full **GLM-5.3** (704 GB FP8) with SGLang CPU-offload on this
 box: **it does not fit** — the offload loader stages the entire weight set through host
 shared memory, peaking over the machine's total 744 GiB (three OOMs, receipts in
