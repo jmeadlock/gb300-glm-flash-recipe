@@ -21,3 +21,7 @@ prefill-dflash2,105434,cold_prefill_ttft,4.00,s,production config warm shapes; ~
 prefill-dflash2,8000,first_hit_autotune,16.0,s,approx one-time cost per prompt-size class after restart
 dflash2,1,accept_length_min,2.77,tokens,observed range on prose
 dflash2,1,accept_length_max,3.95,tokens,observed range on prose
+dflash2-derisked,1,decode,218.8,tok/s,Blackfrost DERISKED variant; stock drafter
+dflash2-derisked,8,aggregate,757.2,tok/s,warm
+dflash2-derisked,1,accept_length_min,2.69,tokens,stock-trained drafter on derisked base
+dflash2-derisked,1,accept_length_max,3.69,tokens,stock-trained drafter on derisked base

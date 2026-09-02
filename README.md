@@ -133,6 +133,19 @@ graphs rebuild on each launch, so nothing else carries over. If you swap a varia
 a shifted output distribution, re-check DFlash2 accept lengths — the drafter was
 trained against the stock base, and a large drift would erode the speculative win.
 
+Measured example — swapping the stock checkpoint for Blackfrost's DERISKED variant
+(same arch, modified weights), stock-trained drafter retained:
+
+| | Stock | DERISKED |
+|---|---|---|
+| C1 decode | 234.2 tok/s | 218.8 tok/s (−6.5%) |
+| C8 aggregate | 825.2 tok/s | 757.2 tok/s |
+| DFlash2 accept length | 2.77–3.95 | 2.69–3.69 |
+
+Accept lengths barely moved: a surgically-modified variant keeps nearly the whole
+speculative win without retraining the drafter. Total swap time incl. warmup: ~8 min
+(191 GB already staged on NVMe).
+
 ## ⚠️ Warm up or your benchmarks lie
 
 The single most important operational finding: **first requests at each new batch shape
