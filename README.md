@@ -233,6 +233,20 @@ tool-call parsing and the warmup sweep were re-verified after the reboot. Rollba
 `sudo rm /etc/modprobe.d/nvidia-cdmm.conf && sudo update-initramfs -u && sudo reboot`.
 Reboot to SSH ≈ 2.5 min; the `--restart unless-stopped` container is serving ≈ 90 s later.
 
+## Full GLM-5.3 (744B) on one Station — V1
+
+The 433 GB NVFP4 checkpoint does not fit 269 GB of HBM; vLLM 0.28's per-parameter UVA offload puts 188 GiB of
+routed experts in Grace memory and serves the rest from HBM. **[`recipes/launch-big-v1.sh`](recipes/launch-big-v1.sh)**
+is the locked V1: 33.8 tok/s single-stream, 57.7 aggregate at 4 streams, greedy-identical to the previous config,
+tool calls and agent loops verified, 10–12k tok/s cold prefill. Needs CDMM (above) and the bind-mounted
+[`recipes/sitecustomize-bigv1.py`](recipes/sitecustomize-bigv1.py) (pins the FlashInfer autotune cache so a relaunch
+is ~18 min instead of ~50, and fixes `--enable-return-routed-experts` on MLA models).
+
+What the overnight campaign measured — the C2C link ceiling, the expert-routing trace (128 resident experts per layer
+capture ~75% of reads vs 50% uniform), which kernels and memory paths are dead, and the slot-cache design that follows —
+is in [`research/big-glm-v1-campaign-2026-09-05.md`](research/big-glm-v1-campaign-2026-09-05.md); scripts and the raw
+ledger are in [`bench/bigv1/`](bench/bigv1/).
+
 ## Failure ledger
 
 Ten failed launches preceded the working stack (wrong image tags, wrapper-dir mounts,
